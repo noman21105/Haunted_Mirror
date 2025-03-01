@@ -1,44 +1,26 @@
 body {
-    text-align: center;
     background-color: black;
     color: white;
-    font-family: Arial, sans-serif;
+    text-align: center;
+    font-family: "Arial", sans-serif;
 }
 
-#mirror {
-    width: 80%;
-    max-width: 800px;
-    border: 5px solid white;
-    margin-top: 20px;
+#startButton {
+    margin-top: 20%;
+    font-size: 20px;
+    padding: 15px 30px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#mirrorContainer {
     position: relative;
 }
 
-#mirrorOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
+#mirror {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    /* Dark overlay */
-    display: none;
-}
-
-#ghostImage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-}
-
-button {
-    background-color: red;
-    color: white;
-    padding: 15px;
-    font-size: 20px;
-    border: none;
-    cursor: pointer;
+    border: 5px solid white;
 }

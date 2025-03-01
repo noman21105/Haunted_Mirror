@@ -13,13 +13,15 @@
 
     <button id="startButton">Start</button>
 
-    <div id="mirrorContainer" style="display: none;">
-        <div id="mirrorOverlay"></div> <!-- Dark overlay when face tilts -->
+    <div id="mirrorContainer" style="display: none; position: relative;">
         <img src="/video_feed" id="mirror">
-        <img id="ghostImage" src="" style="display: none;"> <!-- Full-screen ghost -->
+
+        <!-- Ghost Overlay (Ensuring it appears on top) -->
+        <div id="mirrorOverlay"></div>
+        <img id="ghostImage" src="/static/ghosts/ghost_2.jpeg" style="display: none;">
     </div>
 
-    <!-- Ghost Sound (Continuous) -->
+    <!-- Ghost Sound (Loops Forever) -->
     <audio id="ghostSound" loop>
         <source src="/static/sounds/ghost_sound.mp3" type="audio/mpeg">
     </audio>
@@ -29,32 +31,37 @@
             document.getElementById("startButton").style.display = "none";
             document.getElementById("mirrorContainer").style.display = "block";
 
-            // Wait for 5 seconds, then play the sound
+            // Wait 5 seconds, then start the ghost sound
             setTimeout(function () {
                 let sound = document.getElementById("ghostSound");
-                sound.play().catch(error => console.log("Autoplay blocked, user interaction required."));
+                sound.play().catch(error => console.log("Autoplay blocked."));
             }, 5000);
         });
 
-        function updateMirrorState(state, ghostSrc = "") {
+        function updateMirrorState(state) {
             let overlay = document.getElementById("mirrorOverlay");
             let ghostImage = document.getElementById("ghostImage");
 
             if (state === "dark") {
                 overlay.style.display = "block";
-                ghostImage.src = ghostSrc;
                 ghostImage.style.display = "block";
+
+                // Show ghost for 1.5 seconds, then remove
+                setTimeout(() => {
+                    overlay.style.display = "none";
+                    ghostImage.style.display = "none";
+                }, 1500);
             } else {
                 overlay.style.display = "none";
                 ghostImage.style.display = "none";
             }
         }
 
-        // Event listener for real-time ghost effect (Triggered by Flask)
+        // Listen for real-time ghost triggers from Flask
         const eventSource = new EventSource("/mirror_state");
         eventSource.onmessage = function (event) {
             const data = JSON.parse(event.data);
-            updateMirrorState(data.state, data.ghost);
+            updateMirrorState(data.state);
         };
     </script>
 </body>
