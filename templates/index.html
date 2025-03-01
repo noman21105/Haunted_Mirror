@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haunted Mirror</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <h1>Haunted Mirror 👀</h1>
+
+    <button id="startButton">Start</button>
+
+    <div id="mirrorContainer" style="display: none;">
+        <div id="mirrorOverlay"></div> <!-- Dark overlay when face tilts -->
+        <img src="/video_feed" id="mirror">
+        <img id="ghostImage" src="" style="display: none;"> <!-- Full-screen ghost -->
+    </div>
+
+    <!-- Ghost Sound (Continuous) -->
+    <audio id="ghostSound" loop>
+        <source src="/static/sounds/ghost_sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.getElementById("startButton").addEventListener("click", function () {
+            document.getElementById("startButton").style.display = "none";
+            document.getElementById("mirrorContainer").style.display = "block";
+
+            // Wait for 5 seconds, then play the sound
+            setTimeout(function () {
+                let sound = document.getElementById("ghostSound");
+                sound.play().catch(error => console.log("Autoplay blocked, user interaction required."));
+            }, 5000);
+        });
+
+        function updateMirrorState(state, ghostSrc = "") {
+            let overlay = document.getElementById("mirrorOverlay");
+            let ghostImage = document.getElementById("ghostImage");
+
+            if (state === "dark") {
+                overlay.style.display = "block";
+                ghostImage.src = ghostSrc;
+                ghostImage.style.display = "block";
+            } else {
+                overlay.style.display = "none";
+                ghostImage.style.display = "none";
+            }
+        }
+
+        // Event listener for real-time ghost effect (Triggered by Flask)
+        const eventSource = new EventSource("/mirror_state");
+        eventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            updateMirrorState(data.state, data.ghost);
+        };
+    </script>
+</body>
+
+</html>
